@@ -175,7 +175,6 @@ public class EffPlayEffect extends Effect {
 				if (asPlayer != null)
 					baseEffect.source(asPlayer);
 				baseEffect.force(force);
-				applyParticleReceivers(baseEffect, players);
 				if (countValue != null) {
 					int clamped = (int) Math.max(0L, Math.min(countValue.longValue(), 16384L));
 					baseEffect.count(clamped);
@@ -187,8 +186,14 @@ public class EffPlayEffect extends Effect {
 				if (extraValue != null)
 					baseEffect.extra(extraValue.doubleValue());
 				for (Location location : locations) {
+					if (location == null)
+						continue;
 					ParticleEffect scheduledEffect = baseEffect.copy();
-					runAtLocation(location, () -> scheduledEffect.spawn(location));
+					runAtLocation(location, () -> {
+						scheduledEffect.location(location);
+						applyParticleReceivers(scheduledEffect, players);
+						scheduledEffect.spawn();
+					});
 				}
 			}
 		}
