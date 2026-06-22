@@ -49,6 +49,9 @@ import org.skriptlang.skript.registration.SyntaxRegistry;
 @Since("2.14")
 public class EffPlayEffect extends Effect {
 
+	private static final int DEFAULT_PARTICLE_RECEIVER_RADIUS = 32;
+	private static final boolean DEFAULT_PARTICLE_RECEIVER_BY_DISTANCE = true;
+
 	public static void register(SyntaxRegistry registry) {
 		registry.register(SyntaxRegistry.EFFECT, SyntaxInfo.builder(EffPlayEffect.class)
 				.addPatterns(
@@ -166,11 +169,13 @@ public class EffPlayEffect extends Effect {
 				}
 			// Particles
 			} else if (draw instanceof ParticleEffect particleEffect) {
+				if (players != null && players.length == 0)
+					continue;
 				ParticleEffect baseEffect = particleEffect.copy(); // avoid modifying the original effect
 				if (asPlayer != null)
 					baseEffect.source(asPlayer);
 				baseEffect.force(force);
-				baseEffect.receivers(players);
+				applyParticleReceivers(baseEffect, players);
 				if (countValue != null) {
 					int clamped = (int) Math.max(0L, Math.min(countValue.longValue(), 16384L));
 					baseEffect.count(clamped);
@@ -187,6 +192,17 @@ public class EffPlayEffect extends Effect {
 				}
 			}
 		}
+	}
+
+	private static void applyParticleReceivers(ParticleEffect effect, @Nullable Player[] players) {
+		if (players != null) {
+			effect.receivers(players);
+			return;
+		}
+
+		// Paper defaults are not stable after passing a null receiver array. Explicit nearby receivers
+		// preserve old Skript semantics: visible to nearby players unless script targets players itself.
+		effect.receivers(DEFAULT_PARTICLE_RECEIVER_RADIUS, DEFAULT_PARTICLE_RECEIVER_BY_DISTANCE);
 	}
 
 	private void runAtLocation(Location location, Runnable runnable) {

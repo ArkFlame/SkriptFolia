@@ -1,0 +1,14 @@
+parse:
+	results: {folia-cobweb-particle-receivers::parse::*}
+	code:
+		command /cobwebparticlereceivertest:
+			trigger:
+				set {_b} to block below player
+				set {_loc} to location of {_b}
+				draw 1 cloud particle at {_b} with extra 0.1 with force
+				draw 1 cloud particle at {_loc} with extra 0.1 with force
+				draw 1 dust particle using dustOption(white, 2) at {_loc}
+				draw 1 dust particle using dustOption(white, 2) at {_loc} with extra 0.1 with force
+
+test "cobweb axe particle syntax parses":
+	assert {folia-cobweb-particle-receivers::parse::*} is not set with "cobweb particle receiver compatibility lines should parse"
