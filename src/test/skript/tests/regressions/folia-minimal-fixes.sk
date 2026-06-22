@@ -1,0 +1,44 @@
+test "sub-tick periodical is rejected":
+	parse:
+		every 0.01 second:
+			stop
+	assert last parse logs contains "less than one tick" with "sub-tick periodical must fail"
+
+test "every tick parses":
+	parse:
+		every tick:
+			stop
+	assert last parse logs does not contain "less than one tick" with "every tick must parse"
+
+test "weapon menu syntax parses":
+	parse:
+		if player's tool is a netherite sword:
+			stop
+		if player's tool is a netherite spear:
+			stop
+	assert last parse logs does not contain "Can't compare a slot" with "tool itemtype compare must parse"
+
+test "inventory item alias syntax parses":
+	parse:
+		on inventory click:
+			if event-item is red concrete:
+				stop
+	assert last parse logs does not contain "Can't compare an item stack with a block data" with "event item alias compare must parse"
+
+test "legacy particle syntaxes parse":
+	parse:
+		play 60 of heart at player's location
+		play 15 cloud at player's location
+		draw 1 dust particle using dustOption(white, 2) at player
+		draw 1 dust particle using dustOption(white, 2) at player with extra 0.1 with force
+		draw 1 of dust using dustTransition(green, light green, 10) at player with extra 0 with force
+		draw 1 of cloud at player with extra 0
+		draw 1 of cloud at player with offset vector(1, 1, 1) with extra 2
+		play hurt animation on player
+	assert last parse logs does not contain "Can't understand" with "legacy particle/entity-effect syntaxes must parse"
+
+test "folia owner section parses":
+	parse:
+		run task 1 tick later for player:
+			stop
+	assert last parse logs does not contain "Can't understand this section" with "owner section must parse"

@@ -49,9 +49,6 @@ import org.skriptlang.skript.registration.SyntaxRegistry;
 @Since("2.14")
 public class EffPlayEffect extends Effect {
 
-	private static final int DEFAULT_PARTICLE_RECEIVER_RADIUS = 32;
-	private static final boolean DEFAULT_PARTICLE_RECEIVER_BY_DISTANCE = true;
-
 	public static void register(SyntaxRegistry registry) {
 		registry.register(SyntaxRegistry.EFFECT, SyntaxInfo.builder(EffPlayEffect.class)
 				.addPatterns(
@@ -191,7 +188,7 @@ public class EffPlayEffect extends Effect {
 					ParticleEffect scheduledEffect = baseEffect.copy();
 					runAtLocation(location, () -> {
 						scheduledEffect.location(location);
-						applyParticleReceivers(scheduledEffect, players);
+						applyExplicitParticleReceivers(scheduledEffect, players);
 						scheduledEffect.spawn();
 					});
 				}
@@ -199,15 +196,9 @@ public class EffPlayEffect extends Effect {
 		}
 	}
 
-	private static void applyParticleReceivers(ParticleEffect effect, @Nullable Player[] players) {
-		if (players != null) {
+	private static void applyExplicitParticleReceivers(ParticleEffect effect, @Nullable Player[] players) {
+		if (players != null)
 			effect.receivers(players);
-			return;
-		}
-
-		// Paper defaults are not stable after passing a null receiver array. Explicit nearby receivers
-		// preserve old Skript semantics: visible to nearby players unless script targets players itself.
-		effect.receivers(DEFAULT_PARTICLE_RECEIVER_RADIUS, DEFAULT_PARTICLE_RECEIVER_BY_DISTANCE);
 	}
 
 	private void runAtLocation(Location location, Runnable runnable) {

@@ -13,7 +13,6 @@ import ch.njol.skript.lang.function.Parameter;
 import ch.njol.skript.lang.function.SimpleJavaFunction;
 import ch.njol.skript.registrations.Classes;
 import ch.njol.skript.registrations.DefaultClasses;
-import ch.njol.skript.util.Color;
 import ch.njol.skript.variables.Variables;
 import ch.njol.yggdrasil.Fields;
 import ch.njol.yggdrasil.SimpleClassSerializer;
@@ -76,7 +75,7 @@ public class ParticleModule extends HierarchicalAddonModule {
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static void registerCompatibilityFunctions() {
-		ClassInfo<Color> colorInfo = (ClassInfo<Color>) Classes.getExactClassInfo(Color.class);
+		ClassInfo<ch.njol.skript.util.Color> colorInfo = (ClassInfo<ch.njol.skript.util.Color>) Classes.getExactClassInfo(ch.njol.skript.util.Color.class);
 		ClassInfo<Particle.DustOptions> dustOptionInfo = (ClassInfo<Particle.DustOptions>) Classes.getExactClassInfo(Particle.DustOptions.class);
 		ClassInfo<Particle.DustTransition> dustTransitionInfo = (ClassInfo<Particle.DustTransition>) Classes.getExactClassInfo(Particle.DustTransition.class);
 
@@ -89,7 +88,7 @@ public class ParticleModule extends HierarchicalAddonModule {
 		}, dustOptionInfo, true) {
 			@Override
 			public Particle.DustOptions[] executeSimple(Object[][] params) {
-				Color color = (Color) params[0][0];
+				ch.njol.skript.util.Color color = (ch.njol.skript.util.Color) params[0][0];
 				Number size = (Number) params[1][0];
 				float sizeValue = size == null || size.floatValue() <= 0.0F ? 1.0F : size.floatValue();
 				return new Particle.DustOptions[] {new Particle.DustOptions(color.asBukkitColor(), sizeValue)};
@@ -105,8 +104,8 @@ public class ParticleModule extends HierarchicalAddonModule {
 		}, dustTransitionInfo, true) {
 			@Override
 			public Particle.DustTransition[] executeSimple(Object[][] params) {
-				Color from = (Color) params[0][0];
-				Color to = (Color) params[1][0];
+				ch.njol.skript.util.Color from = (ch.njol.skript.util.Color) params[0][0];
+				ch.njol.skript.util.Color to = (ch.njol.skript.util.Color) params[1][0];
 				Number size = (Number) params[2][0];
 				float sizeValue = size == null || size.floatValue() <= 0.0F ? 1.0F : size.floatValue();
 				return new Particle.DustTransition[] {new Particle.DustTransition(from.asBukkitColor(), to.asBukkitColor(), sizeValue)};
@@ -448,7 +447,7 @@ public class ParticleModule extends HierarchicalAddonModule {
 	 */
 	private static void registerDataSerializers() {
 		// allow serializing particle data classes
-		Variables.yggdrasil.registerSingleClass(org.bukkit.Color.class, "particle.color");
+		Variables.yggdrasil.registerSingleClass(Color.class, "particle.color");
 		Variables.yggdrasil.registerClassResolver(new NonInstantiableClassSerializer<>(Particle.DustOptions.class, "particle.dustoptions") {
 			@Override
 			public Fields serialize(Particle.DustOptions object) {
@@ -460,7 +459,7 @@ public class ParticleModule extends HierarchicalAddonModule {
 
 			@Override
 			protected Particle.DustOptions deserialize(Fields fields) throws StreamCorruptedException, NotSerializableException {
-				org.bukkit.Color color = fields.getAndRemoveObject("color", org.bukkit.Color.class);
+				Color color = fields.getAndRemoveObject("color", Color.class);
 				float size = fields.getAndRemovePrimitive("size", Float.class);
 				if (color == null)
 					throw new NotSerializableException("Color cannot be null for DustOptions");
@@ -480,8 +479,8 @@ public class ParticleModule extends HierarchicalAddonModule {
 
 			@Override
 			protected Particle.DustTransition deserialize(Fields fields) throws StreamCorruptedException, NotSerializableException {
-				org.bukkit.Color fromColor = fields.getAndRemoveObject("fromColor", org.bukkit.Color.class);
-				org.bukkit.Color toColor = fields.getAndRemoveObject("toColor", org.bukkit.Color.class);
+				Color fromColor = fields.getAndRemoveObject("fromColor", Color.class);
+				Color toColor = fields.getAndRemoveObject("toColor", Color.class);
 				float size = fields.getAndRemovePrimitive("size", Float.class);
 				if (fromColor == null || toColor == null)
 					throw new NotSerializableException("Colors cannot be null for DustTransition");
@@ -520,7 +519,7 @@ public class ParticleModule extends HierarchicalAddonModule {
 
 			@Override
 			protected Particle.Spell deserialize(Fields fields) throws StreamCorruptedException, NotSerializableException {
-				org.bukkit.Color color = fields.getAndRemoveObject("color", org.bukkit.Color.class);
+				Color color = fields.getAndRemoveObject("color", Color.class);
 				float power = fields.getAndRemovePrimitive("power", Float.class);
 				if (color == null)
 					throw new NotSerializableException("Color cannot be null for Spell");
@@ -543,7 +542,7 @@ public class ParticleModule extends HierarchicalAddonModule {
 			@Override
 			protected Particle.Trail deserialize(Fields fields) throws StreamCorruptedException, NotSerializableException {
 				Location target = fields.getAndRemoveObject("target", Location.class);
-				org.bukkit.Color color = fields.getAndRemoveObject("color", org.bukkit.Color.class);
+				Color color = fields.getAndRemoveObject("color", Color.class);
 				int duration = 20;
 				// allow deserializing old versions without duration
 				if (fields.hasField("duration"))
